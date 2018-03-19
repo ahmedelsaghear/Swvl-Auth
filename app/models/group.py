@@ -14,11 +14,13 @@ class Group(db.Model):
     group_name = db.Column(db.String, nullable=True)
     group_description = db.Column(db.String, nullable=True)
 
+
+    # using cascade = delete introduce the ability to remove from tables that have relationships
     users = db.relationship(
-        'User', secondary=user_group, lazy='joined', back_populates='groups')
+        'User', secondary=user_group, cascade="save-update, merge, delete", lazy='joined', back_populates='groups')
 
     resources = db.relationship(
-        'Resource', secondary=permission, lazy='joined', back_populates='groups')
+        'Resource', secondary=permission, cascade="save-update, merge, delete", lazy='joined', back_populates='groups')
 
     def __init__(self, group_name=None, group_description=None):
         self.group_name = group_name

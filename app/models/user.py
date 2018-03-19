@@ -13,6 +13,7 @@ class User(db.Model):
     user_id = db.Column(db.String(24), primary_key=True)
     user_name = db.Column(db.String)
 
+    # by this relationship groups that a user belong to can be listed
     groups = db.relationship(
-        'Group', secondary=user_group, lazy='joined', back_populates='users')
+        'Group', secondary=user_group, cascade="save-update, merge, delete", lazy='joined', back_populates='users')
 

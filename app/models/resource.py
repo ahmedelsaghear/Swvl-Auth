@@ -8,7 +8,7 @@ class Resource(db.Model):
     resource_description = db.Column(db.String, nullable=True)
 
     groups = db.relationship(
-        'Group', secondary=permission, lazy='joined', back_populates='resources')
+        'Group', secondary=permission, cascade="save-update, merge, delete", lazy='joined', back_populates='resources')
 
     def __init__(self, resource_name=None, resource_description=None):
         self.resource_name = resource_name
