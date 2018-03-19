@@ -106,6 +106,7 @@ def get_group_users(group_id):
 @app.route('/group/resources/<int:groupId>', methods=['POST'])
 def auth_group(group_id):
     print group_id
+    print "is not cached_______________"
     data = request.get_json()
     print data, type(data)
     resources = [int(resource.get("resourceId")) for resource in data]
@@ -117,18 +118,16 @@ def auth_group(group_id):
 
 
 @app.route('/authorized', methods=['GET'])
-@app.cache.memoize(timeout=300)
 def auth():
     user_id = request.args.get("userId")
     resource_name = request.args.get("resourceName")
-    print "not cached_____________________"
     is_authorized = auth_service.auth(user_id=user_id, resource_name=resource_name)
+
     if is_authorized is None:
         return 'group is not found ', 400
 
     res = make_response(jsonify({"authorized": True}))
     res.headers['Access-Control-Allow-Origin'] = '*'
-    print res.__dict__
     if is_authorized is False:
         res = make_response(jsonify({"authorized": False}))
         res.headers['Access-Control-Allow-Origin'] = '*'

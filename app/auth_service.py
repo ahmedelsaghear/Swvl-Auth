@@ -1,6 +1,6 @@
 from sqlalchemy import and_
 from sqlalchemy.orm import joinedload
-from app import db
+from app import db, app
 from app.models import User, Group, Resource, user_group, permission
 
 
@@ -70,16 +70,15 @@ def get_group_resources(groub_id):
     group = db.session.query(Group).options(joinedload('resources')).filter(Group.id == groub_id).first()
     return group.resources
 
-
+@app.cache.memoize(timeout=300)
 def auth(user_id, resource_name):
     print user_id, type(user_id)
+    print "not cached_____________________"
     print resource_name, type(resource_name)
     user = db.session.query(User).options(joinedload('groups')).filter(User.user_id == user_id).first()
-    print user.__dict__
     if user is None:
         return None
     groups = [group.id for group in user.groups]
-    print groups
     resource = db.session.query(Resource).join(permission).filter(
         and_(permission.c.group_id.in_(groups),
              Resource.resource_name == resource_name)).first()
