@@ -18,6 +18,7 @@ def post_resource():
 
 
 @app.route('/resource/<int:resource_id>', methods=['GET'])
+@app.cache.memoize(timeout=300)
 def get_resource(resource_id):
     resource = auth_service.get_resource(id=resource_id)
     res = make_response(jsonify(resource.serialize()))
@@ -26,8 +27,10 @@ def get_resource(resource_id):
 
 
 @app.route('/resource', methods=['GET'])
+@app.cache.memoize(timeout=300)
 def get_resources():
     resources = auth_service.get_resources()
+
     serialized_resources = [resource.serialize() for resource in resources]
 
     res = make_response(jsonify({"count": len(resources), "items": serialized_resources}))
@@ -48,6 +51,7 @@ def post_group():
 
 
 @app.route('/group/<int:group_id>', methods=['GET'])
+@app.cache.memoize(timeout=300)
 def get_group(group_id):
     group = auth_service.get_group(id=group_id)
     res = make_response(jsonify(group.serialize()))
@@ -56,6 +60,7 @@ def get_group(group_id):
 
 
 @app.route('/group', methods=['Get'])
+@app.cache.memoize(timeout=300)
 def get_groups():
     groups = auth_service.get_groups()
     serialized_groups = [group.serialize() for group in groups]
@@ -78,6 +83,7 @@ def attach_user(group_id):
 
 
 @app.route('/group/resources/<int:group_id>', methods=['GET'])
+@app.cache.memoize(timeout=300)
 def get_group_resources(group_id):
     resources = auth_service.get_group_resources(groub_id=group_id)
     print resources
@@ -88,6 +94,7 @@ def get_group_resources(group_id):
 
 
 @app.route('/group/users/<int:group_id>', methods=['GET'])
+@app.cache.memoize(timeout=300)
 def get_group_users(group_id):
     users = auth_service.get_group_users(groub_id=group_id)
     print users
@@ -110,9 +117,11 @@ def auth_group(group_id):
 
 
 @app.route('/authorized', methods=['GET'])
+@app.cache.memoize(timeout=300)
 def auth():
     user_id = request.args.get("userId")
     resource_name = request.args.get("resourceName")
+    print "not cached_____________________"
     is_authorized = auth_service.auth(user_id=user_id, resource_name=resource_name)
     if is_authorized is None:
         return 'group is not found ', 400
