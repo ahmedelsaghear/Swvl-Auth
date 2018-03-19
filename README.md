@@ -2,16 +2,23 @@ Swvl_Auth
 
 
 Prerequisites
+
     Ubuntu installed
+    
 Installing
+
     run scripts/get_dependencies.sh
     and to start the service run run.sh
 
 Built With
+
     Flask the web framework used
     Sqlite for the database
+
 about design
-    there are 4 main models in the service
+
+    there are 4 main models in the service:
+    
     1- User
     2- Group is a collection of Users. A User can belong to zero or more Groups
     3- Resource is the target that a user is trying to access
