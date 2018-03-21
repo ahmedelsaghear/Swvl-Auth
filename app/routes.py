@@ -97,7 +97,7 @@ def get_group_users(group_id):
     res.headers['Access-Control-Allow-Origin'] = '*'
     return res, 200
 
-@app.route('/group/<int:group_id>/resources', methods=['POST'])
+@app.route('/group/<int:group_id>/authorize', methods=['POST'])
 def auth_group(group_id):
     data = request.get_json()
     resources = [int(resource.get("resourceId")) for resource in data]
