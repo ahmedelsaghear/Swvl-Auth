@@ -41,7 +41,6 @@ def get_resources():
 @app.route('/group', methods=['POST'])
 def post_group():
     data = request.get_json()
-    print type(data)
     group_name = data.get("name")
     group_description = data.get("description")
     group = auth_service.set_group(name=group_name, description=group_description)
@@ -71,11 +70,8 @@ def get_groups():
 
 @app.route('/group/<int:group_id>/users', methods=['POST'])
 def attach_user(group_id):
-    print group_id
     data = request.get_json()
-    print data, type(data)
     users = [str(user.get("userId")) for user in data]
-    print users, type(users)
     is_found = auth_service.link_user_with_groub(users_list=users, groub_id=group_id)
     if is_found is False:
         return "group is not found", 400
@@ -86,7 +82,6 @@ def attach_user(group_id):
 @app.cache.memoize(timeout=300)
 def get_group_resources(group_id):
     resources = auth_service.get_group_resources(groub_id=group_id)
-    print resources
     resources_id = [resource.serialize() for resource in resources]
     res = make_response(jsonify({"count": len(resources), "items": resources_id}))
     res.headers['Access-Control-Allow-Origin'] = '*'
@@ -97,7 +92,6 @@ def get_group_resources(group_id):
 @app.cache.memoize(timeout=300)
 def get_group_users(group_id):
     users = auth_service.get_group_users(groub_id=group_id)
-    print users
     users_id = [{"userId": user.user_id} for user in users]
     res = make_response(jsonify({"count": len(users), "items": users_id}))
     res.headers['Access-Control-Allow-Origin'] = '*'
@@ -105,12 +99,8 @@ def get_group_users(group_id):
 
 @app.route('/group/<int:group_id>/resources', methods=['POST'])
 def auth_group(group_id):
-    print group_id
-    print "is not cached_______________"
     data = request.get_json()
-    print data, type(data)
     resources = [int(resource.get("resourceId")) for resource in data]
-    print resources, type(resources)
     res = auth_service.authorize_resources(resources_list=resources, groub_id=group_id)
     if res is False:
         return 'group is not found ', 400

@@ -39,7 +39,6 @@ def get_groups():
 
 
 def link_user_with_groub(users_list, groub_id):
-    print users_list[1], type(users_list[1])
     group = db.session.query(Group).filter(Group.id == groub_id).first()
     if group is None:
         return False
@@ -72,9 +71,6 @@ def get_group_resources(groub_id):
 
 @app.cache.memoize(timeout=300)
 def auth(user_id, resource_name):
-    print user_id, type(user_id)
-    print "not cached_____________________"
-    print resource_name, type(resource_name)
     user = db.session.query(User).options(joinedload('groups')).filter(User.user_id == user_id).first()
     if user is None:
         return None
