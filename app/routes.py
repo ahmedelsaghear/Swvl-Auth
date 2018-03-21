@@ -9,7 +9,6 @@ def index():
 @app.route('/resource', methods=['POST'])
 def post_resource():
     data = request.get_json()
-    print type(data)
     resource_name = data.get("name")
     resource = auth_service.set_resource(name=resource_name)
     res = make_response(jsonify(resource.serialize()))
@@ -81,6 +80,7 @@ def attach_user(group_id):
 @app.route('/group/<int:group_id>/resources', methods=['GET'])
 @app.cache.memoize(timeout=300)
 def get_group_resources(group_id):
+    print "not cached_____________"
     resources = auth_service.get_group_resources(groub_id=group_id)
     resources_id = [resource.serialize() for resource in resources]
     res = make_response(jsonify({"count": len(resources), "items": resources_id}))
@@ -100,6 +100,7 @@ def get_group_users(group_id):
 @app.route('/group/<int:group_id>/authorize', methods=['POST'])
 def auth_group(group_id):
     data = request.get_json()
+    print type(data), data
     resources = [int(resource.get("resourceId")) for resource in data]
     res = auth_service.authorize_resources(resources_list=resources, groub_id=group_id)
     if res is False:

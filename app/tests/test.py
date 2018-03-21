@@ -8,20 +8,22 @@ from flask import jsonify
 
 class TestEndPoints(DBTestCase):
     def test_post_resource(self):
-        response = self.client.post("/resource", data=jsonify({"name": "booking"}))
-        data = json.loads(response.data)
-        resource = db.session.query(Resource).filter(Resource.id == data.get("id")).first()
-        if resource is None:
-            return False
-        return self.assertEquals(resource.resource_name, "booking")
+        with self.client:
+            response = self.client.post("/resource", data=json.dumps({"name": "booking"}), headers={'Content-Type': 'application/json'})
+            data = json.loads(response.data)
+            resource = db.session.query(Resource).filter(Resource.id == data.get("id")).first()
+            if resource is None:
+                return False
+            return self.assertEquals(resource.resource_name, "booking")
 
     def test_post_group(self):
-        response = self.client.post("/group", data=jsonify({"name": "swvl"}))
-        data = json.loads(response.data)
-        group = db.session.query(Group).filter(Group.id == data.get("id")).first()
-        if group is None:
-            return False
-        return self.assertEquals(group.resource_name, "swvl")
+        with self.client:
+            response = self.client.post("/group", data=json.dumps({"name": "swvl"}), headers={'Content-Type': 'application/json'})
+            data = json.loads(response.data)
+            group = db.session.query(Group).filter(Group.id == data.get("id")).first()
+            if group is None:
+                return False
+            return self.assertEquals(group.group_name, "swvl")
 
     def test_get_groups(self):
         group = Group(group_name="swvl")
@@ -42,17 +44,22 @@ class TestEndPoints(DBTestCase):
         return self.assertEquals(data.get("count"), 1)
 
     def test_auth_group(self):
-        resource = Resource(resource_name="booking")
-        group = Group(group_name="swvl")
+        resource = Resource(resource_name="plying")
+        group = Group(group_name="tactful")
         db.session.add(resource)
         db.session.add(group)
-        resource_name = resource.resource_name
+        db.session.commit()
+        #session.refresh(f)
+        print "resource_________", resource.__dict__, resource.id
+        resource_id = resource.id
         group_id = group.id
+        print group_id
+        with self.client:
+            response = self.client.post("/group/" + str(1) + "/authorize", data=json.dumps([{"resourceId": resource_id}]), headers={'Content-Type': 'application/json'})
+            return self.assertEquals(response.status_code, 204)
 
-        response = self.client.post("/group/resources/" + str(group_id), data=jsonify([{"resourceId": resource_name}]))
-        return self.assertEquals(response.status_code, 204)
     def test_auth(self):
-        user = User(user_name="ahmed")
+        user = User(user_id=100, user_name="ahmed")
         db.session.add(user)
         user_id = user.user_id
         db.session.commit()
@@ -67,7 +74,7 @@ class TestEndPoints(DBTestCase):
         db.session.add(resource)
         db.session.commit()
 
-        response = self.client.post("authorized?userId=" + str(user_id) + "&resourceName=booking")
+        response = self.client.get("authorized?userId=" + str(user_id) + "&resourceName=booking")
         data = json.loads(response.data)
-        return self.assertEquals(data.get("authorized"), True)
 
+        return self.assertEquals(data.get("authorized"), True)

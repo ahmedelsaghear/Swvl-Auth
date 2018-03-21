@@ -17,5 +17,6 @@ class User(db.Model):
     groups = db.relationship(
         'Group', secondary=user_group, cascade="save-update, merge, delete", lazy='joined', back_populates='users')
 
-    def __init__(self, user_name=None):
+    def __init__(self, user_name=None, user_id=None):
+        self.user_id = user_id
         self.user_name = user_name
