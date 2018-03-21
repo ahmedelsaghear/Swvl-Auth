@@ -69,7 +69,7 @@ def get_groups():
     res.headers['Access-Control-Allow-Origin'] = '*'
     return res, 200
 
-@app.route('/group/users/<int:group_id>', methods=['POST'])
+@app.route('/group/<int:group_id>/users', methods=['POST'])
 def attach_user(group_id):
     print group_id
     data = request.get_json()
@@ -82,7 +82,7 @@ def attach_user(group_id):
     return '', 204
 
 
-@app.route('/group/resources/<int:group_id>', methods=['GET'])
+@app.route('/group/<int:group_id>/resources', methods=['GET'])
 @app.cache.memoize(timeout=300)
 def get_group_resources(group_id):
     resources = auth_service.get_group_resources(groub_id=group_id)
@@ -93,7 +93,7 @@ def get_group_resources(group_id):
     return res, 200
 
 
-@app.route('/group/users/<int:group_id>', methods=['GET'])
+@app.route('/group/<int:group_id>/users', methods=['GET'])
 @app.cache.memoize(timeout=300)
 def get_group_users(group_id):
     users = auth_service.get_group_users(groub_id=group_id)
@@ -103,7 +103,7 @@ def get_group_users(group_id):
     res.headers['Access-Control-Allow-Origin'] = '*'
     return res, 200
 
-@app.route('/group/resources/<int:groupId>', methods=['POST'])
+@app.route('/group/<int:group_id>/resources', methods=['POST'])
 def auth_group(group_id):
     print group_id
     print "is not cached_______________"
