@@ -113,14 +113,13 @@ def auth():
     resource_name = request.args.get("resourceName")
     is_authorized = auth_service.auth(user_id=user_id, resource_name=resource_name)
 
-    if is_authorized is None:
-        return 'group is not found ', 400
 
     res = make_response(jsonify({"authorized": True}))
     res.headers['Access-Control-Allow-Origin'] = '*'
-    if is_authorized is False:
-        res = make_response(jsonify({"authorized": False}))
-        res.headers['Access-Control-Allow-Origin'] = '*'
-        return res, 403
 
-    return res, 200
+    if is_authorized is True:
+        return res, 200
+
+    res = make_response(jsonify({"authorized": False}))
+    res.headers['Access-Control-Allow-Origin'] = '*'
+    return res, 403
