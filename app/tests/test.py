@@ -49,20 +49,19 @@ class TestEndPoints(DBTestCase):
         db.session.add(resource)
         db.session.add(group)
         db.session.commit()
-        #session.refresh(f)
         print "resource_________", resource.__dict__, resource.id
         resource_id = resource.id
         group_id = group.id
         print group_id
         with self.client:
-            response = self.client.post("/group/" + str(1) + "/authorize", data=json.dumps([{"resourceId": resource_id}]), headers={'Content-Type': 'application/json'})
+            response = self.client.post("/group/" + str(group_id) + "/authorize", data=json.dumps([{"resourceId": resource_id}]), headers={'Content-Type': 'application/json'})
             return self.assertEquals(response.status_code, 204)
 
     def test_auth(self):
         user = User(user_id=100, user_name="ahmed")
         db.session.add(user)
-        user_id = user.user_id
         db.session.commit()
+        user_id = user.user_id
 
         group = Group(group_name="swvl")
         group.users.append(user)
@@ -78,3 +77,19 @@ class TestEndPoints(DBTestCase):
         data = json.loads(response.data)
 
         return self.assertEquals(data.get("authorized"), True)
+
+    def test_add_users_to_group(self):
+        user = User(user_id=100, user_name="ahmed")
+        db.session.add(user)
+        db.session.commit()
+        user_id = user.user_id
+
+        group = Group(group_name="swvl")
+        group.users.append(user)
+        db.session.add(group)
+        db.session.commit()
+        group_id = group.id
+
+        with self.client:
+            response = self.client.post("/group/" + str(group_id) + "/users", data=json.dumps([{"userId": user_id}]), headers={'Content-Type': 'application/json'})
+            return self.assertEquals(response.status_code, 204)
